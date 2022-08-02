@@ -6,8 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:internet_check/internet_check.dart';
 import 'package:location/location.dart';
 import 'package:note_task/layout/cubit/states.dart';
-import 'package:note_task/layout/weather_layout.dart';
-import 'package:note_task/models/model_weather.dart';
 
 import 'package:note_task/shared/constants/constants.dart';
 import 'package:note_task/shared/remote/local/cash_helper.dart';
@@ -18,8 +16,7 @@ class WeatherCubit extends Cubit<WeatherStates> {
   WeatherCubit({Key? key}) : super(WeatherInitialStates());
 
   static WeatherCubit get(context) => BlocProvider.of(context);
-  late WeatherModel model;
-
+  static const String api='Enter your Api here';
 
   static bool isOnline=  false;
 
@@ -37,23 +34,18 @@ class WeatherCubit extends Cubit<WeatherStates> {
     DioHelper.getData(
         query: {
           'q': cityName,
-          'appid': '21a26d6b73cfe422e203a063b8e124f9'}    )
+          'appid': api}    )
         .then((value) {
           emit(WeatherSuccessStates());
-    // print(value.data['name'].toString());
       cityByLocation=value.data['name'];
-      print('${cityByLocation.toString()} now egypt');
       tempMin=value.data['main']['temp_min'].round()-275;
       tempMax=value.data['main']['temp_max'].round()-275;
       tempNow=value.data['main']['temp'].round()-275;
       description=value.data['weather'][0]['description'];
-      // model=WeatherModel.fromJson(value.data);
 
     }).catchError((onError) {
       emit(WeatherErrorStates(onError.toString()));
-      //showToast(text:'please Check internet ' , state: ToastStates.ERROR);
 
-      //print(onError);
     });
   }
 
